@@ -4,3 +4,5 @@ When I need to be fast I use what I'm more-than-familiar with.
 In my case, that's *gulp* .. PHP.
 
 hax.php -- a collection of routines to speed you up!
+
+NOTE: _requires_ PHP 5.4.0+
