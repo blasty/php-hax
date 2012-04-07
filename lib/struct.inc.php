@@ -7,6 +7,12 @@
 	class bin_struct {
 		public $fields;
 
+		private $pfmt = array(
+			'u8'  => '0x%02x', 's8'  => '0x%02x',
+			'u16' => '0x%04x', 's16' => '0x%04x', 'u16be' => '0x%04x',
+			'u32' => '0x%08x', 's32' => '0x%08x', 'u32be' => '0x%08x'
+		);
+
 		private $fmt = array(
 			'u8'  => 'C', 's8'  => 'c',
 			'u16' => 'v', 's16' => 's', 'u16be' => 'n',
@@ -27,10 +33,7 @@
 			if (!isset($this->fields[$name]))
 				return NULL;
 
-			return ($this->fields[$name]['len'] == 1) ?
-				$this->fields[$name]['val'] :
-				$this->fields[$name]['val']
-			;
+			return $this->fields[$name]['val'];
 		}
 
 		function __set($name, $value) {
@@ -101,6 +104,30 @@
 					array($meta['fmt'].$meta['len']),
 					$meta['val']	
 				));				
+			}
+
+			return $o;
+		}
+
+		function pprint() {
+			$name_max = 0;
+			$o = '';
+
+			foreach($this->fields as $name => $meta) {
+				if (strlen($name) > $name_max)
+					$name_max = strlen($name);
+			}
+
+			foreach($this->fields as $name => $meta) {
+				$o .= sprintf("  %{$name_max}s : ", $name);
+
+				$vals = ($meta['len'] == 1) ? array($meta['val']) : $meta['val'];
+				$val_fmt = [];
+
+				for($i = 0; $i < $meta['len']; $i++)
+					$val_fmt[] = sprintf($this->pfmt[$meta['type']], $vals[$i]);
+
+				$o .= implode(", ", $val_fmt) . "\n";
 			}
 
 			return $o;
